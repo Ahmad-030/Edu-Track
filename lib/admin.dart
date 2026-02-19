@@ -1160,8 +1160,10 @@ class AdminMoreScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             _SettingRow(Icons.info_outline_rounded, 'About EduTrack',
-                'Version 2.0 — Firebase Cloud Backend', T.teal, () {}),
+                'Learn more about this app', T.teal,
+                    () => Navigator.push(context, slideRoute(const AboutScreen()))),
             const SizedBox(height: 8),
+            // Simple logout button — calls performLogout directly
             LogoutButton(onTap: () => showLogoutDialog(context)),
           ]);
         },
@@ -1199,5 +1201,160 @@ class _SettingRow extends StatelessWidget {
         ),
       ),
     ),
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  ABOUT SCREEN
+// ═══════════════════════════════════════════════════════════════════
+
+class AboutScreen extends StatelessWidget {
+  const AboutScreen({super.key});
+
+  @override Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: T.bg,
+      appBar: buildAppBar('About EduTrack'),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(children: [
+          const SizedBox(height: 12),
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF1E3A8A), Color(0xFF2563EB), Color(0xFF3B82F6)],
+                begin: Alignment.topLeft, end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(28),
+              boxShadow: [BoxShadow(color: T.blue.withOpacity(.4),
+                  blurRadius: 32, offset: const Offset(0, 12))],
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 24),
+            child: Column(children: [
+              Container(
+                width: 80, height: 80,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(.15),
+                  borderRadius: BorderRadius.circular(22),
+                  border: Border.all(color: Colors.white.withOpacity(.25), width: 1.5),
+                ),
+                child: const Icon(Icons.school_rounded, size: 44, color: Colors.white),
+              ),
+              const SizedBox(height: 18),
+              const Text('EduTrack', style: TextStyle(
+                  fontSize: 34, fontWeight: FontWeight.w900,
+                  color: Colors.white, letterSpacing: -1.5)),
+              const SizedBox(height: 6),
+              Text('Smart School Management',
+                  style: TextStyle(color: Colors.white.withOpacity(.75), fontSize: 14,
+                      fontWeight: FontWeight.w600)),
+            ]),
+          ),
+          const SizedBox(height: 28),
+          SurfaceCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const SectionHeader('ABOUT THIS APP'),
+            const Text(
+              'EduTrack is a comprehensive school management platform designed to simplify daily administration for schools of all sizes.',
+              style: TextStyle(fontSize: 14, color: T.inkMid, height: 1.6),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'From managing students and teachers to tracking attendance and collecting fees — everything is in one place, backed by real-time cloud sync.',
+              style: TextStyle(fontSize: 14, color: T.inkMid, height: 1.6),
+            ),
+          ])),
+          const SizedBox(height: 16),
+          SurfaceCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const SectionHeader('KEY FEATURES'),
+            _FeatureRow(Icons.people_rounded, 'Teacher Management',
+                'Add, edit, and assign teachers to classes with secure login credentials.', T.blue),
+            const Divider(height: 20, color: T.dividerFaint),
+            _FeatureRow(Icons.school_rounded, 'Student Enrollment',
+                'Manage student records, roll numbers, and parent contacts.', T.purple),
+            const Divider(height: 20, color: T.dividerFaint),
+            _FeatureRow(Icons.fact_check_rounded, 'Attendance Tracking',
+                'Teachers mark daily attendance; admins get a full overview.', T.teal),
+            const Divider(height: 20, color: T.dividerFaint),
+            _FeatureRow(Icons.account_balance_wallet_rounded, 'Fee Management',
+                'Monitor monthly fee collection with bulk actions and filters.', T.green),
+            const Divider(height: 20, color: T.dividerFaint),
+            _FeatureRow(Icons.cloud_sync_rounded, 'Real-time Cloud Sync',
+                'All data is stored securely in Firebase Firestore, always up to date.', T.amber),
+          ])),
+          const SizedBox(height: 16),
+          SurfaceCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const SectionHeader('BUILT WITH'),
+            Wrap(spacing: 10, runSpacing: 10, children: [
+              _TechChip('Flutter', Icons.flutter_dash, T.blue),
+              _TechChip('Firebase', Icons.local_fire_department_rounded, T.amber),
+              _TechChip('Firestore', Icons.storage_rounded, T.teal),
+              _TechChip('Firebase Auth', Icons.lock_rounded, T.purple),
+            ]),
+          ])),
+          const SizedBox(height: 16),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+                color: T.blueLight, borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: T.blue.withOpacity(.15))),
+            child: Column(children: [
+              const Icon(Icons.copyright_rounded, color: T.blue, size: 22),
+              const SizedBox(height: 8),
+              Text(
+                '© ${DateTime.now().year} EduTrack. All rights reserved.',
+                style: const TextStyle(color: T.blue, fontWeight: FontWeight.w800, fontSize: 13),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 4),
+              const Text(
+                'This application is intended for authorized school use only.',
+                style: TextStyle(color: T.inkLight, fontSize: 12),
+                textAlign: TextAlign.center,
+              ),
+            ]),
+          ),
+          const SizedBox(height: 32),
+        ]),
+      ),
+    );
+  }
+}
+
+class _FeatureRow extends StatelessWidget {
+  final IconData icon;
+  final String title, description;
+  final Color color;
+  const _FeatureRow(this.icon, this.title, this.description, this.color);
+
+  @override Widget build(BuildContext context) => Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    Container(width: 40, height: 40,
+        decoration: BoxDecoration(color: color.withOpacity(.1), borderRadius: BorderRadius.circular(11)),
+        child: Icon(icon, color: color, size: 20)),
+    const SizedBox(width: 14),
+    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Text(title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: T.ink)),
+      const SizedBox(height: 3),
+      Text(description, style: const TextStyle(fontSize: 12, color: T.inkLight, height: 1.5)),
+    ])),
+  ]);
+}
+
+class _TechChip extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final Color color;
+  const _TechChip(this.label, this.icon, this.color);
+
+  @override Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+    decoration: BoxDecoration(color: color.withOpacity(.08), borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withOpacity(.2))),
+    child: Row(mainAxisSize: MainAxisSize.min, children: [
+      Icon(icon, color: color, size: 15),
+      const SizedBox(width: 6),
+      Text(label, style: TextStyle(color: color, fontWeight: FontWeight.w700, fontSize: 13)),
+    ]),
   );
 }

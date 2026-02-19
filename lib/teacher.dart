@@ -15,8 +15,8 @@ class TeacherDashboard extends StatefulWidget {
 
 class _TeacherDashboardState extends State<TeacherDashboard> {
 
-  Future<void> _logout() async {
-    final confirmed = await showDialog<bool>(
+  void _logout() {
+    showDialog(
       context: context,
       barrierColor: Colors.black.withOpacity(.5),
       builder: (_) => Dialog(
@@ -32,27 +32,24 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
               style: TextStyle(fontSize: 15, color: T.inkLight)),
           const SizedBox(height: 24),
           Row(children: [
-            Expanded(child: OutlineButton(label: 'Cancel', onTap: () => Navigator.pop(context, false))),
+            Expanded(child: OutlineButton(label: 'Cancel', onTap: () => Navigator.pop(context))),
             const SizedBox(width: 12),
-            Expanded(child: PrimaryButton(label: 'Logout', onTap: () => Navigator.pop(context, true))),
+          Expanded(
+            child: PrimaryButton(
+              label: 'Logout',
+              onTap: () {
+                Navigator.pop(context);
+                performLogout(context);
+              },
+            ),
+          ),
           ]),
         ])),
       ),
     );
-
-    if (confirmed != true) return;
-
-    // Clear session first → UI reacts instantly via _AuthGate
-    suppressAuthEvents = true;
-    sessionNotifier.value = null;
-    FB.signOut(); // fire-and-forget
   }
 
   @override Widget build(BuildContext context) {
-    if (currentSession == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
     final session = currentSession!;
     final sid = session.schoolId;
     final tid = session.uid;

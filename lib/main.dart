@@ -49,7 +49,6 @@ class FB {
   static Future<String> createTeacherAuthAccount(String email, String password) async {
     FirebaseApp? secondaryApp;
     try {
-      // Always delete and recreate to avoid stale secondary-app auth events
       try { await Firebase.app('secondary').delete(); } catch (_) {}
 
       secondaryApp = await Firebase.initializeApp(
@@ -63,7 +62,7 @@ class FB {
       );
       final uid = cred.user!.uid;
       await secondaryAuth.signOut();
-      await secondaryApp.delete(); // prevent stray auth-state events
+      await secondaryApp.delete();
       return uid;
     } on FirebaseAuthException {
       try { await secondaryApp?.delete(); } catch (_) {}
@@ -167,9 +166,16 @@ class Session {
 final sessionNotifier = ValueNotifier<Session?>(null);
 Session? get currentSession => sessionNotifier.value;
 
-// Global flag — set true before intentional signOut so _AuthGate ignores
-// the repeated null-user events Firebase fires (can fire 2-3 times).
-bool suppressAuthEvents = false;
+/// Clean logout — clears session instantly, then signs out Firebase.
+Future<void> performLogout(BuildContext context) async {
+  await FB.signOut();
+
+  Navigator.of(context).pushAndRemoveUntil(
+    MaterialPageRoute(builder: (_) => LoginScreen()),
+        (route) => false,
+  );
+}
+
 
 // ═══════════════════════════════════════════════════════════════════
 //  THEME
@@ -273,7 +279,6 @@ class _AuthGateState extends State<AuthGate> {
 
   @override void initState() {
     super.initState();
-    suppressAuthEvents = false;
     _authSub = FB.auth.authStateChanges().listen(_onAuthChanged);
   }
 
@@ -284,21 +289,10 @@ class _AuthGateState extends State<AuthGate> {
 
   Future<void> _onAuthChanged(User? user) async {
     if (user == null) {
-      // Suppress repeated sign-out callbacks Firebase fires after signOut()
-      if (suppressAuthEvents) return;
-
-      if (sessionNotifier.value != null) {
-        suppressAuthEvents = true;
-        sessionNotifier.value = null;
-        // Reset after a short delay so future sign-outs still work
-        Future.delayed(const Duration(seconds: 2), () => suppressAuthEvents = false);
-      }
+      sessionNotifier.value = null;
       if (mounted) setState(() => _loading = false);
       return;
     }
-
-    // Reset suppress flag when a user signs in
-    suppressAuthEvents = false;
 
     // Skip re-fetch if same user already in session
     if (sessionNotifier.value?.uid == user.uid) {
@@ -636,42 +630,44 @@ class _DeleteDialogState extends State<_DeleteDialog> {
   );
 }
 
+/// Simple logout dialog — no state needed.
 void showLogoutDialog(BuildContext context) {
-  showDialog(context: context, barrierColor: Colors.black.withOpacity(.5),
-      builder: (_) => const _LogoutDialog());
-}
-
-class _LogoutDialog extends StatelessWidget {
-  const _LogoutDialog();
-  @override Widget build(BuildContext context) => Dialog(
-    insetPadding: const EdgeInsets.symmetric(horizontal: 28),
-    child: Padding(padding: const EdgeInsets.all(24), child: Column(mainAxisSize: MainAxisSize.min, children: [
-      Container(width: 64, height: 64,
-          decoration: const BoxDecoration(color: T.blueLight, shape: BoxShape.circle),
-          child: const Icon(Icons.logout_rounded, color: T.blue, size: 28)),
-      const SizedBox(height: 18),
-      const Text('Logout', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: T.ink)),
-      const SizedBox(height: 8),
-      const Text('Are you sure you want to log out?',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 15, color: T.inkLight)),
-      const SizedBox(height: 24),
-      Row(children: [
-        Expanded(child: OutlineButton(label: 'Cancel', onTap: () => Navigator.pop(context))),
-        const SizedBox(width: 12),
-        Expanded(child: PrimaryButton(label: 'Logout', onTap: () {
-          Navigator.pop(context);
-          suppressAuthEvents = true;
-          sessionNotifier.value = null;
-          FB.signOut();
-        })),
-      ]),
-    ])),
+  showDialog(
+    context: context,
+    barrierColor: Colors.black.withOpacity(.5),
+    builder: (_) => Dialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 28),
+      child: Padding(padding: const EdgeInsets.all(24), child: Column(mainAxisSize: MainAxisSize.min, children: [
+        Container(width: 64, height: 64,
+            decoration: const BoxDecoration(color: T.blueLight, shape: BoxShape.circle),
+            child: const Icon(Icons.logout_rounded, color: T.blue, size: 28)),
+        const SizedBox(height: 18),
+        const Text('Logout', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: T.ink)),
+        const SizedBox(height: 8),
+        const Text('Are you sure you want to log out?',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 15, color: T.inkLight)),
+        const SizedBox(height: 24),
+        Row(children: [
+          Expanded(child: OutlineButton(label: 'Cancel', onTap: () => Navigator.pop(context))),
+          const SizedBox(width: 12),
+          Expanded(
+            child: PrimaryButton(
+              label: 'Logout',
+              onTap: () {
+                Navigator.pop(context);
+                performLogout(context);
+              },
+            ),
+          ),
+        ]),
+      ])),
+    ),
   );
 }
 
 // ═══════════════════════════════════════════════════════════════════
-//  SHARED REUSABLE WIDGETS  (used by both admin.dart and teacher.dart)
+//  SHARED REUSABLE WIDGETS
 // ═══════════════════════════════════════════════════════════════════
 
 class SurfaceCard extends StatelessWidget {
