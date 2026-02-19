@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "387168571956",
+    "project_id": "edu-track-7d45f",
+    "storage_bucket": "edu-track-7d45f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:387168571956:android:b3fa820c710f0fe4ebb061",
+        "android_client_info": {
+          "package_name": "com.example.eduu_trackk"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnmvpzBlINK56CAvTQMmwaaWSYKGtii18"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
