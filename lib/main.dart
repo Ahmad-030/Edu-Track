@@ -1048,7 +1048,7 @@ class AuthScreen extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════════════
-//  LOGIN
+//  LOGIN  (with double-back-to-exit + role hint)
 // ═══════════════════════════════════════════════════════════════════
 
 class LoginScreen extends StatefulWidget {
@@ -1060,6 +1060,7 @@ class _LoginState extends State<LoginScreen> {
   final _email = TextEditingController();
   final _pass  = TextEditingController();
   bool _loading = false, _obscure = true;
+  DateTime? _lastBackPress;
 
   void _login() async {
     if (_email.text.trim().isEmpty || _pass.text.isEmpty) {
@@ -1093,39 +1094,97 @@ class _LoginState extends State<LoginScreen> {
 
   void _err(String m) => ScaffoldMessenger.of(context).showSnackBar(buildSnack(m, isError: true));
 
-  @override Widget build(BuildContext context) => Scaffold(
-    appBar: buildAppBar('Login'),
-    body: SingleChildScrollView(padding: const EdgeInsets.all(24), child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const SizedBox(height: 4),
-      const Text('Welcome back!', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: T.ink, letterSpacing: -.5)),
-      const SizedBox(height: 4),
-      const Text('Sign in to your school account', style: TextStyle(color: T.inkLight, fontSize: 15)),
-      const SizedBox(height: 32),
-      SurfaceCard(child: Column(children: [
-        LabeledField(ctrl: _email, label: 'Email Address', icon: Icons.email_outlined, type: TextInputType.emailAddress),
-        const SizedBox(height: 14),
-        TextField(
-          controller: _pass, obscureText: _obscure,
-          style: const TextStyle(fontFamily: 'Nunito', fontSize: 15),
-          decoration: InputDecoration(
-            labelText: 'Password',
-            prefixIcon: const Icon(Icons.lock_outline_rounded, color: T.inkFaint, size: 20),
-            suffixIcon: IconButton(
-              icon: Icon(_obscure ? Icons.visibility_off_rounded : Icons.visibility_rounded, color: T.inkFaint, size: 20),
-              onPressed: () => setState(() => _obscure = !_obscure),
+  Future<bool> _onWillPop() async {
+    final now = DateTime.now();
+    if (_lastBackPress == null ||
+        now.difference(_lastBackPress!) > const Duration(seconds: 2)) {
+      _lastBackPress = now;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Row(children: [
+            Icon(Icons.exit_to_app_rounded, color: Colors.white, size: 18),
+            SizedBox(width: 10),
+            Text('Press back again to exit', style: TextStyle(
+                fontFamily: 'Nunito', fontWeight: FontWeight.w700, fontSize: 14)),
+          ]),
+          backgroundColor: T.inkMid,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          margin: const EdgeInsets.all(16),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+      return false;
+    }
+    return true;
+  }
+
+  @override Widget build(BuildContext context) => PopScope(
+    canPop: false,
+    onPopInvokedWithResult: (didPop, _) async {
+      if (didPop) return;
+      final shouldPop = await _onWillPop();
+      if (shouldPop && context.mounted) {
+        Navigator.of(context).pop();
+      }
+    },
+    child: Scaffold(
+      appBar: buildAppBar('Login'),
+      body: SingleChildScrollView(padding: const EdgeInsets.all(24), child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start, children: [
+        const SizedBox(height: 4),
+        const Text('Welcome back!', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: T.ink, letterSpacing: -.5)),
+        const SizedBox(height: 4),
+        const Text('Sign in to your school account', style: TextStyle(color: T.inkLight, fontSize: 15)),
+        const SizedBox(height: 16),
+        // ── Role info banner ──────────────────────────────────────
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: T.blueLight,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: T.blue.withOpacity(.2)),
+          ),
+          child: Row(children: [
+            const Icon(Icons.info_outline_rounded, color: T.blue, size: 18),
+            const SizedBox(width: 10),
+            Expanded(child: RichText(text: const TextSpan(
+              style: TextStyle(fontFamily: 'Nunito', fontSize: 13, color: T.inkMid, height: 1.4),
+              children: [
+                TextSpan(text: 'School Admin: ', style: TextStyle(fontWeight: FontWeight.w800, color: T.blue)),
+                TextSpan(text: 'Use the email & password you registered with.\n'),
+                TextSpan(text: 'Teacher: ', style: TextStyle(fontWeight: FontWeight.w800, color: T.purple)),
+                TextSpan(text: 'Use the credentials provided by your admin.'),
+              ],
+            ))),
+          ]),
+        ),
+        const SizedBox(height: 20),
+        SurfaceCard(child: Column(children: [
+          LabeledField(ctrl: _email, label: 'Email Address', icon: Icons.email_outlined, type: TextInputType.emailAddress),
+          const SizedBox(height: 14),
+          TextField(
+            controller: _pass, obscureText: _obscure,
+            style: const TextStyle(fontFamily: 'Nunito', fontSize: 15),
+            decoration: InputDecoration(
+              labelText: 'Password',
+              prefixIcon: const Icon(Icons.lock_outline_rounded, color: T.inkFaint, size: 20),
+              suffixIcon: IconButton(
+                icon: Icon(_obscure ? Icons.visibility_off_rounded : Icons.visibility_rounded, color: T.inkFaint, size: 20),
+                onPressed: () => setState(() => _obscure = !_obscure),
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 24),
-        PrimaryButton(label: 'Sign In', onTap: _loading ? null : _login, loading: _loading),
+          const SizedBox(height: 24),
+          PrimaryButton(label: 'Sign In', onTap: _loading ? null : _login, loading: _loading),
+        ])),
       ])),
-    ])),
+    ),
   );
 }
 
 // ═══════════════════════════════════════════════════════════════════
-//  REGISTER SCHOOL
+//  REGISTER SCHOOL  (navigates to LoginScreen after success)
 // ═══════════════════════════════════════════════════════════════════
 
 class RegisterScreen extends StatefulWidget {
@@ -1156,6 +1215,16 @@ class _RegisterState extends State<RegisterScreen> {
         'email': _email.text.trim(), 'adminUid': uid,
         'createdAt': FieldValue.serverTimestamp(),
       });
+
+      // Sign out so they land fresh on login screen
+      await FB.signOut();
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        buildSnack('School registered! Please sign in.'),
+      );
+      // Replace the register screen with the login screen
+      Navigator.pushReplacement(context, slideRoute(const LoginScreen()));
     } on FirebaseAuthException catch (e) {
       if (mounted) _err(e.message ?? 'Registration failed');
     } catch (_) {

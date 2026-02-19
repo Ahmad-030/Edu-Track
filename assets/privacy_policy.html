@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — EduTrack</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:       #2563EB;
+      --blue-light: #EFF6FF;
+      --ink:        #0F172A;
+      --ink-mid:    #334155;
+      --ink-faint:  #94A3B8;
+      --divider:    #E2E8F0;
+      --bg:         #F8FAFC;
+      --white:      #FFFFFF;
+      --green-bg:   #ECFDF5;
+      --amber-bg:   #FFFBEB;
+    }
+
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, #0A1628 0%, #1E3A8A 70%, #2563EB 100%);
+      padding: 40px 20px 56px;
+    }
+    .hero-inner { max-width: 680px; margin: 0 auto; }
+
+    .logo { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .logo-icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, #1E3A8A, #2563EB);
+      border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .logo-name { font-size: 17px; color: #fff; font-weight: 600; }
+
+    .hero h1 {
+      font-size: clamp(28px, 8vw, 48px);
+      color: #fff; font-weight: 700;
+      letter-spacing: -1px; line-height: 1.1;
+      margin-bottom: 10px;
+    }
+    .hero h1 span { color: #67E8F9; }
+    .hero-sub { font-size: 13px; color: rgba(255,255,255,0.6); margin-bottom: 18px; max-width: 420px; }
+
+    .badges { display: flex; gap: 8px; flex-wrap: wrap; }
+    .badge {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
+      padding: 5px 12px; border-radius: 20px;
+      font-size: 11px; color: rgba(255,255,255,0.8); font-weight: 500;
+    }
+
+    /* ── WAVE ── */
+    .wave { display: block; width: 100%; margin-top: -2px; }
+
+    /* ── LAYOUT ── */
+    .container { max-width: 680px; margin: 0 auto; padding: 0 16px 60px; }
+
+    /* ── INTRO ── */
+    .intro {
+      background: var(--blue-light);
+      border: 1px solid rgba(37,99,235,0.15);
+      border-radius: 12px;
+      padding: 14px 16px;
+      color: #1D4ED8;
+      font-size: 13px;
+      margin: 24px 0 32px;
+      line-height: 1.65;
+    }
+
+    /* ── SECTION ── */
+    .section { margin-bottom: 28px; }
+    .section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .num {
+      font-size: 10px; font-weight: 700;
+      background: var(--blue-light); color: var(--blue);
+      padding: 3px 8px; border-radius: 6px;
+      letter-spacing: 0.5px; white-space: nowrap;
+    }
+    .section h2 { font-size: 17px; font-weight: 700; color: var(--ink); letter-spacing: -0.3px; }
+    .section p { font-size: 13px; color: var(--ink-mid); margin-bottom: 10px; line-height: 1.7; }
+    .section p:last-child { margin-bottom: 0; }
+
+    /* ── CARDS ── */
+    .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
+    .card { background: var(--white); border: 1px solid var(--divider); border-radius: 10px; padding: 12px; }
+    .card .icon { font-size: 18px; margin-bottom: 6px; }
+    .card .label { font-size: 10px; font-weight: 700; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 3px; }
+    .card .val { font-size: 12px; font-weight: 600; color: var(--ink); line-height: 1.4; }
+
+    /* ── LIST ── */
+    .items { list-style: none; display: flex; flex-direction: column; gap: 7px; margin: 10px 0; }
+    .items li {
+      display: flex; align-items: flex-start; gap: 10px;
+      background: var(--white); border: 1px solid var(--divider);
+      border-radius: 10px; padding: 10px 13px;
+      font-size: 13px; color: var(--ink-mid); font-weight: 500; line-height: 1.5;
+    }
+    .items li .ic { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+
+    /* ── TABLE ── */
+    .tbl-wrap {
+      overflow-x: auto; -webkit-overflow-scrolling: touch;
+      margin: 10px 0; border-radius: 10px; border: 1px solid var(--divider);
+    }
+    table { width: 100%; border-collapse: collapse; background: var(--white); font-size: 12px; min-width: 340px; }
+    thead th { padding: 9px 12px; text-align: left; font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--ink-faint); background: var(--bg); border-bottom: 1px solid var(--divider); }
+    tbody td { padding: 9px 12px; border-bottom: 1px solid var(--divider); color: var(--ink-mid); font-weight: 500; vertical-align: top; line-height: 1.45; }
+    tbody tr:last-child td { border-bottom: none; }
+
+    /* ── HIGHLIGHTS ── */
+    .hl {
+      border-radius: 10px; padding: 12px 14px; margin: 10px 0;
+      display: flex; align-items: flex-start; gap: 9px;
+      font-size: 13px; font-weight: 500; line-height: 1.6;
+    }
+    .hl .ic { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+    .hl.blue  { background: var(--blue-light); border: 1px solid rgba(37,99,235,0.15); color: #1D4ED8; }
+    .hl.green { background: var(--green-bg);   border: 1px solid rgba(5,150,105,0.2);  color: #065F46; }
+    .hl.amber { background: var(--amber-bg);   border: 1px solid rgba(217,119,6,0.2);  color: #92400E; }
+
+    hr { border: none; border-top: 1px solid var(--divider); margin: 28px 0; }
+
+    /* ── CONTACT ── */
+    .contact {
+      background: linear-gradient(135deg, #1E3A8A, #2563EB);
+      border-radius: 16px; padding: 24px 18px;
+      text-align: center; margin-top: 32px;
+    }
+    .contact h3 { font-size: 20px; color: #fff; margin-bottom: 6px; }
+    .contact p  { font-size: 12px; color: rgba(255,255,255,0.6); margin-bottom: 16px; }
+    .contact a {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.22);
+      padding: 10px 18px; border-radius: 10px;
+      color: #fff; font-weight: 600; font-size: 13px;
+      text-decoration: none; word-break: break-all;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      text-align: center; padding: 24px 16px 40px;
+      color: var(--ink-faint); font-size: 11px;
+      border-top: 1px solid var(--divider); line-height: 1.9;
+    }
+
+    @media (max-width: 400px) { .cards { grid-template-columns: 1fr; } }
+    @media (min-width: 560px) {
+      .cards { grid-template-columns: repeat(3, 1fr); }
+      .section h2 { font-size: 19px; }
+      .section p, .items li, .hl { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="logo">
+      <div class="logo-icon">🎓</div>
+      <span class="logo-name">EduTrack</span>
+    </div>
+    <h1>Privacy <span>Policy</span></h1>
+    <p class="hero-sub">Full transparency on how your school's data is collected, used, and protected.</p>
+    <div class="badges">
+      <span class="badge">🔒 GDPR Aligned</span>
+      <span class="badge">📱 Android App</span>
+      <span class="badge">📅 Effective Jan 1, 2025</span>
+    </div>
+  </div>
+</div>
+
+<svg class="wave" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 50" preserveAspectRatio="none" height="40">
+  <path fill="#F8FAFC" d="M0,25 C360,50 1080,0 1440,25 L1440,50 L0,50 Z"/>
+</svg>
+
+<div class="container">
+
+  <div class="intro">
+    EduTrack is a school management app for Android serving administrators and teachers to manage students, attendance, and fee records. By using EduTrack, your school agrees to the practices described in this policy.
+  </div>
+
+  <!-- 1 -->
+  <div class="section">
+    <div class="section-head"><span class="num">01</span><h2>Information We Collect</h2></div>
+    <p>Only what's necessary to run the app — entered by school staff, never auto-harvested from devices.</p>
+    <div class="cards">
+      <div class="card"><div class="icon">🏫</div><div class="label">School</div><div class="val">Name, admin name, email</div></div>
+      <div class="card"><div class="icon">👩‍🏫</div><div class="label">Teachers</div><div class="val">Name, subject, phone, class</div></div>
+      <div class="card"><div class="icon">🎓</div><div class="label">Students</div><div class="val">Name, roll no., parent phone</div></div>
+      <div class="card"><div class="icon">📅</div><div class="label">Attendance</div><div class="val">Daily present / absent</div></div>
+      <div class="card"><div class="icon">💳</div><div class="label">Fees</div><div class="val">Monthly amount, paid status</div></div>
+      <div class="card"><div class="icon">🔐</div><div class="label">Auth</div><div class="val">Email &amp; hashed passwords</div></div>
+    </div>
+    <div class="hl amber"><span class="ic">⚠️</span><span>We do <strong>not</strong> collect payment cards, national IDs, photos, biometric data, or device identifiers beyond the above.</span></div>
+  </div>
+
+  <hr>
+
+  <!-- 2 -->
+  <div class="section">
+    <div class="section-head"><span class="num">02</span><h2>How We Use Your Data</h2></div>
+    <p>Exclusively to provide EduTrack features. No advertising, no profiling, no sale to third parties.</p>
+    <ul class="items">
+      <li><span class="ic">✅</span><div><strong>Authentication</strong> — Admin and teacher login via Firebase Auth.</div></li>
+      <li><span class="ic">✅</span><div><strong>Class Management</strong> — Assigning teachers and organizing student enrollment.</div></li>
+      <li><span class="ic">✅</span><div><strong>Attendance Tracking</strong> — Recording and displaying daily attendance records.</div></li>
+      <li><span class="ic">✅</span><div><strong>Fee Management</strong> — Tracking monthly fee status and generating summaries.</div></li>
+      <li><span class="ic">✅</span><div><strong>Dashboard Reports</strong> — Real-time statistics for authorized admins.</div></li>
+    </ul>
+  </div>
+
+  <hr>
+
+  <!-- 3 -->
+  <div class="section">
+    <div class="section-head"><span class="num">03</span><h2>Data Storage &amp; Firebase</h2></div>
+    <p>All data is stored in <strong>Google Firebase</strong> (Firestore + Firebase Auth) by Google LLC.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Service</th><th>Purpose</th><th>Data Stored</th></tr></thead>
+        <tbody>
+        <tr><td><strong>Firestore</strong></td><td>Real-time database</td><td>School, teachers, students, attendance, fees</td></tr>
+        <tr><td><strong>Firebase Auth</strong></td><td>Secure login</td><td>Email, hashed passwords, roles</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="hl green"><span class="ic">🔒</span><span>Firestore security rules ensure only authenticated users within their school can access that school's data. No cross-school access.</span></div>
+  </div>
+
+  <hr>
+
+  <!-- 4 -->
+  <div class="section">
+    <div class="section-head"><span class="num">04</span><h2>Data Sharing &amp; Disclosure</h2></div>
+    <p>We do <strong>not</strong> sell, rent, or trade personal data. Sharing only occurs in these limited cases:</p>
+    <ul class="items">
+      <li><span class="ic">🏢</span><div><strong>Google Firebase</strong> — Infrastructure provider, processing data per our instructions only.</div></li>
+      <li><span class="ic">⚖️</span><div><strong>Legal Obligations</strong> — If required by law or court order.</div></li>
+      <li><span class="ic">🛡️</span><div><strong>Safety</strong> — To prevent imminent harm or illegal activity.</div></li>
+    </ul>
+    <div class="hl amber"><span class="ic">🚫</span><span>Student data will <strong>never</strong> be shared with advertising networks, data brokers, or commercial third parties.</span></div>
+  </div>
+
+  <hr>
+
+  <!-- 5 -->
+  <div class="section">
+    <div class="section-head"><span class="num">05</span><h2>Children's Privacy</h2></div>
+    <p>Student records may include minors. Students do not have accounts — data is entered by school staff only. The school is the data controller and is responsible for obtaining parental consent where required by local law.</p>
+    <div class="hl green"><span class="ic">👶</span><span>Minimum student data only: name, roll number, and parent phone.</span></div>
+  </div>
+
+  <hr>
+
+  <!-- 6 -->
+  <div class="section">
+    <div class="section-head"><span class="num">06</span><h2>Data Retention &amp; Deletion</h2></div>
+    <p>Data is retained while the school account is active. Admins can delete any record in-app at any time. On full account closure, all data is permanently removed within <strong>30 days</strong>.</p>
+  </div>
+
+  <hr>
+
+  <!-- 7 -->
+  <div class="section">
+    <div class="section-head"><span class="num">07</span><h2>Your Rights</h2></div>
+    <ul class="items">
+      <li><span class="ic">👁️</span><div><strong>Access</strong> — Request a copy of all data held about your school.</div></li>
+      <li><span class="ic">✏️</span><div><strong>Rectification</strong> — Correct data via in-app edit features.</div></li>
+      <li><span class="ic">🗑️</span><div><strong>Erasure</strong> — Delete records in-app or request full account removal.</div></li>
+      <li><span class="ic">📤</span><div><strong>Portability</strong> — Request a structured export of your school's data.</div></li>
+    </ul>
+    <p>We respond to verified requests within 30 days.</p>
+  </div>
+
+  <hr>
+
+  <!-- 8 -->
+  <div class="section">
+    <div class="section-head"><span class="num">08</span><h2>Security</h2></div>
+    <ul class="items">
+      <li><span class="ic">🔐</span><div><strong>Encrypted Passwords</strong> — bcrypt hashing via Firebase Auth. No plain-text storage.</div></li>
+      <li><span class="ic">📡</span><div><strong>TLS Encryption</strong> — All data in transit encrypted with TLS 1.2+.</div></li>
+      <li><span class="ic">🏰</span><div><strong>Security Rules</strong> — Role-based Firestore rules prevent unauthorized access.</div></li>
+      <li><span class="ic">☁️</span><div><strong>Google Infrastructure</strong> — ISO 27001 &amp; SOC 2 certified.</div></li>
+    </ul>
+    <div class="hl amber"><span class="ic">⚠️</span><span>Use strong passwords and rotate teacher credentials periodically. Contact us immediately if you suspect a breach.</span></div>
+  </div>
+
+  <hr>
+
+  <!-- 9 -->
+  <div class="section">
+    <div class="section-head"><span class="num">09</span><h2>Policy Changes</h2></div>
+    <p>We may update this policy as needed. Material changes will be notified via in-app notice and email to the registered admin at least 30 days before taking effect.</p>
+  </div>
+
+  <!-- CONTACT -->
+  <div class="contact">
+    <h3>Contact Us</h3>
+    <p>Questions, concerns, or data requests? Reach our privacy team.</p>
+    <a href="mailto:privacy@edutrack.app">✉️ &nbsp;privacy@edutrack.app</a>
+  </div>
+
+</div>
+
+<div class="footer">
+  <p>© 2025 EduTrack. All rights reserved.</p>
+  <p>School Management App for Android</p>
+</div>
+
+</body>
+</html>

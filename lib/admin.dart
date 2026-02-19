@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:intl/intl.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 import 'main.dart';
 
@@ -245,11 +247,25 @@ class TeachersScreen extends StatelessWidget {
           final teachers = snap.data!.docs.map(Teacher.fromDoc).toList();
           if (teachers.isEmpty) return const EmptyState(Icons.people_rounded,
               'No teachers yet', 'Tap the button below to add your first teacher');
-          return ListView.separated(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
-            itemCount: teachers.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 10),
-            itemBuilder: (_, i) => _TeacherCard(teacher: teachers[i], sid: sid),
+          // Also stream students once to get counts per class
+          return StreamBuilder<QuerySnapshot>(
+            stream: FB.students(sid).snapshots(),
+            builder: (_, studSnap) {
+              final allStudents = studSnap.hasData
+                  ? studSnap.data!.docs.map(Student.fromDoc).toList() : <Student>[];
+              return ListView.separated(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+                itemCount: teachers.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 10),
+                itemBuilder: (_, i) {
+                  final teacher = teachers[i];
+                  final studentCount = teacher.classId == null
+                      ? 0
+                      : allStudents.where((s) => s.classId == teacher.classId).length;
+                  return _TeacherCard(teacher: teacher, sid: sid, studentCount: studentCount);
+                },
+              );
+            },
           );
         },
       ),
@@ -260,7 +276,8 @@ class TeachersScreen extends StatelessWidget {
 class _TeacherCard extends StatelessWidget {
   final Teacher teacher;
   final String sid;
-  const _TeacherCard({required this.teacher, required this.sid});
+  final int studentCount;
+  const _TeacherCard({required this.teacher, required this.sid, required this.studentCount});
 
   @override Widget build(BuildContext context) => Container(
     decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18),
@@ -278,15 +295,34 @@ class _TeacherCard extends StatelessWidget {
           const SizedBox(height: 2),
           InfoRow(Icons.phone_outlined, teacher.phone),
         ])),
-        if (teacher.classId != null)
-          StreamBuilder<DocumentSnapshot>(
-            stream: FB.classes(sid).doc(teacher.classId!).snapshots(),
-            builder: (_, s) {
-              final name = s.hasData && s.data!.exists
-                  ? (s.data!.data() as Map)['name'] as String : '...';
-              return StatusChip(name, T.blue, T.blueLight);
-            },
-          ),
+        Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+          if (teacher.classId != null) ...[
+            StreamBuilder<DocumentSnapshot>(
+              stream: FB.classes(sid).doc(teacher.classId!).snapshots(),
+              builder: (_, s) {
+                final name = s.hasData && s.data!.exists
+                    ? (s.data!.data() as Map)['name'] as String : '...';
+                return StatusChip(name, T.blue, T.blueLight);
+              },
+            ),
+            const SizedBox(height: 6),
+            // Student count badge
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: T.purpleLight,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(mainAxisSize: MainAxisSize.min, children: [
+                const Icon(Icons.school_rounded, size: 12, color: T.purple),
+                const SizedBox(width: 4),
+                Text('$studentCount students',
+                    style: const TextStyle(color: T.purple, fontSize: 11, fontWeight: FontWeight.w700)),
+              ]),
+            ),
+          ] else
+            const StatusChip('No Class', T.inkFaint, T.dividerFaint),
+        ]),
       ])),
       Container(height: 1, color: T.dividerFaint),
       CardActions(
@@ -1163,7 +1199,10 @@ class AdminMoreScreen extends StatelessWidget {
                 'Learn more about this app', T.teal,
                     () => Navigator.push(context, slideRoute(const AboutScreen()))),
             const SizedBox(height: 8),
-            // Simple logout button — calls performLogout directly
+            _SettingRow(Icons.shield_outlined, 'Privacy Policy',
+                'How we handle your school\'s data', T.blue,
+                    () => Navigator.push(context, slideRoute(const PrivacyPolicyScreen()))),
+            const SizedBox(height: 8),
             LogoutButton(onTap: () => showLogoutDialog(context)),
           ]);
         },
@@ -1293,6 +1332,50 @@ class AboutScreen extends StatelessWidget {
             ]),
           ])),
           const SizedBox(height: 16),
+          // Privacy Policy link
+          Material(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(18),
+            child: InkWell(
+              onTap: () => Navigator.push(context, slideRoute(const PrivacyPolicyScreen())),
+              borderRadius: BorderRadius.circular(18),
+              child: Container(
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: T.blue.withOpacity(.2)),
+                ),
+                child: Row(children: [
+                  Container(
+                    width: 44, height: 44,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF1E3A8A), T.blue],
+                        begin: Alignment.topLeft, end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.shield_rounded, color: Colors.white, size: 22),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    const Text('Privacy Policy', style: TextStyle(
+                        fontWeight: FontWeight.w800, fontSize: 15, color: T.ink)),
+                    const SizedBox(height: 2),
+                    const Text('How we protect your school\'s data',
+                        style: TextStyle(fontSize: 12, color: T.inkLight)),
+                  ])),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(color: T.blueLight, borderRadius: BorderRadius.circular(20)),
+                    child: const Text('Read', style: TextStyle(color: T.blue,
+                        fontSize: 12, fontWeight: FontWeight.w700)),
+                  ),
+                ]),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(18),
@@ -1356,5 +1439,58 @@ class _TechChip extends StatelessWidget {
       const SizedBox(width: 6),
       Text(label, style: TextStyle(color: color, fontWeight: FontWeight.w700, fontSize: 13)),
     ]),
+  );
+}
+// ═══════════════════════════════════════════════════════════════════
+//  PRIVACY POLICY SCREEN
+// ═══════════════════════════════════════════════════════════════════
+class PrivacyPolicyScreen extends StatefulWidget {
+  const PrivacyPolicyScreen({super.key});
+  @override
+  State<PrivacyPolicyScreen> createState() => _PrivacyPolicyScreenState();
+}
+
+class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
+  late final WebViewController _controller;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.disabled)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageFinished: (_) {
+            if (mounted) setState(() => _isLoading = false);
+          },
+          // Prevent the WebView from navigating away from the local HTML
+          onNavigationRequest: (request) =>
+          request.url.startsWith('data:') || request.url == 'about:blank'
+              ? NavigationDecision.navigate
+              : NavigationDecision.prevent,
+        ),
+      );
+    _loadAsset();
+  }
+
+  Future<void> _loadAsset() async {
+    // Guard against async gap where widget may have been disposed
+    if (!mounted) return;
+    final html = await rootBundle.loadString('assets/privacy_policy.html');
+    if (!mounted) return;              // ← check again after await
+    await _controller.loadHtmlString(html);
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: buildAppBar('Privacy Policy'),
+    body: Stack(
+      children: [
+        WebViewWidget(controller: _controller),
+        if (_isLoading)
+          const Center(child: CircularProgressIndicator()),
+      ],
+    ),
   );
 }
