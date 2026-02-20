@@ -1313,6 +1313,77 @@ class _DeleteDialogState extends State<_DeleteDialog> {
   );
 }
 
+void showContactDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    barrierColor: Colors.black.withOpacity(.5),
+    builder: (_) => Dialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 28),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Container(
+            width: 64, height: 64,
+            decoration: const BoxDecoration(color: T.tealLight, shape: BoxShape.circle),
+            child: const Icon(Icons.mail_rounded, color: T.teal, size: 30),
+          ),
+          const SizedBox(height: 18),
+          const Text('Contact Us', style: TextStyle(
+              fontSize: 20, fontWeight: FontWeight.w900, color: T.ink)),
+          const SizedBox(height: 16),
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: T.bg, borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: T.divider),
+            ),
+            padding: const EdgeInsets.all(16),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const Text('Developer', style: TextStyle(
+                  fontSize: 11, fontWeight: FontWeight.w800,
+                  color: T.inkFaint, letterSpacing: 1.0)),
+              const SizedBox(height: 6),
+              const Text('Shipman Production', style: TextStyle(   // ← replace with your name
+                  fontSize: 16, fontWeight: FontWeight.w800, color: T.ink)),
+              const SizedBox(height: 14),
+              const Text('Email', style: TextStyle(
+                  fontSize: 11, fontWeight: FontWeight.w800,
+                  color: T.inkFaint, letterSpacing: 1.0)),
+              const SizedBox(height: 6),
+              Row(children: [
+                const Icon(Icons.email_outlined, size: 16, color: T.teal),
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: () {
+                    Clipboard.setData(
+                        const ClipboardData(text: 'gregoreethomas@gmail.com')); // ← replace
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        buildSnack('Email copied to clipboard!'));
+                  },
+                  child: const Text(
+                    'gregoreethomas@gmail.com',   // ← replace with your email
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700,
+                        color: T.teal, decoration: TextDecoration.underline),
+                  ),
+                ),
+              ]),
+            ]),
+          ),
+          const SizedBox(height: 20),
+          PrimaryButton(
+            label: 'Close',
+            icon: Icons.check_rounded,
+            onTap: () => Navigator.pop(context),
+            color: T.teal,
+          ),
+        ]),
+      ),
+    ),
+  );
+}
+
 void showLogoutDialog(BuildContext context) {
   showDialog(
     context: context, barrierColor: Colors.black.withOpacity(.5),

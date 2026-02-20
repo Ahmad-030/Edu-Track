@@ -1199,9 +1199,14 @@ class AdminMoreScreen extends StatelessWidget {
                 'Learn more about this app', T.teal,
                     () => Navigator.push(context, slideRoute(const AboutScreen()))),
             const SizedBox(height: 8),
+// AFTER:
             _SettingRow(Icons.shield_outlined, 'Privacy Policy',
                 'How we handle your school\'s data', T.blue,
                     () => Navigator.push(context, slideRoute(const PrivacyPolicyScreen()))),
+            const SizedBox(height: 8),
+            _SettingRow(Icons.mail_outline_rounded, 'Contact Us',
+                'Get in touch with the developer', T.teal,
+                    () => showContactDialog(context)),
             const SizedBox(height: 8),
             LogoutButton(onTap: () => showLogoutDialog(context)),
           ]);
@@ -1332,6 +1337,13 @@ class AboutScreen extends StatelessWidget {
             ]),
           ])),
           const SizedBox(height: 16),
+          SurfaceCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const SectionHeader('DEVELOPER'),
+            _FeatureRow(Icons.code_rounded, 'Shipman Production',
+                'gregoreethomas@gmail.com', T.blue),
+          ])),
+          const SizedBox(height: 16),
+          // Privacy Policy link
           // Privacy Policy link
           Material(
             color: Colors.white,
@@ -1369,6 +1381,51 @@ class AboutScreen extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(color: T.blueLight, borderRadius: BorderRadius.circular(20)),
                     child: const Text('Read', style: TextStyle(color: T.blue,
+                        fontSize: 12, fontWeight: FontWeight.w700)),
+                  ),
+                ]),
+              ),
+            ),
+
+          ),
+          // AFTER the Privacy Policy InkWell block, before the copyright container:
+          const SizedBox(height: 16),
+          Material(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(18),
+            child: InkWell(
+              onTap: () => showContactDialog(context),
+              borderRadius: BorderRadius.circular(18),
+              child: Container(
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: T.teal.withOpacity(.2)),
+                ),
+                child: Row(children: [
+                  Container(
+                    width: 44, height: 44,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF0E7490), T.teal],
+                        begin: Alignment.topLeft, end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.mail_rounded, color: Colors.white, size: 22),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    const Text('Contact Us', style: TextStyle(
+                        fontWeight: FontWeight.w800, fontSize: 15, color: T.ink)),
+                    const SizedBox(height: 2),
+                    const Text('Get in touch with the developer',
+                        style: TextStyle(fontSize: 12, color: T.inkLight)),
+                  ])),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(color: T.tealLight, borderRadius: BorderRadius.circular(20)),
+                    child: const Text('Email', style: TextStyle(color: T.teal,
                         fontSize: 12, fontWeight: FontWeight.w700)),
                   ),
                 ]),
